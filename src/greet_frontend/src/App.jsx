@@ -1,31 +1,48 @@
-import { useState } from 'react';
-import { greet_backend } from 'declarations/greet_backend';
+import React from "react";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+} from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Error404 from "./components/utils/Error404";
+import Login from "./components/Login";
+import Dashboard from "./components/Dashboard";
 
-function App() {
-  const [greeting, setGreeting] = useState('');
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    greet_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
+// Layout component to include Navbar across all pages
+const Layout = () => (
+  <>
+    <Navbar />
+    <Outlet /> {/* This is where nested routes will render */}
+  </>
+);
 
+// Define routes using createBrowserRouter
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { index: true, element: <Login /> },
+      { path: "dashboard", element: <Dashboard /> }, // Default route
+      
+    ],
+  },
+  {
+    path: "*",
+    element: <Error404 />, // Catch-all route for 404 errors
+  },
+]);
+
+// Render the application
+const App = () => {
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <RouterProvider router={router}>
+      {" "}
+      
+    </RouterProvider>
   );
-}
+};
 
 export default App;
